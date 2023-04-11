@@ -38,11 +38,11 @@ public class StudentControllerV2 {
 	
 //	We enforce the query parameter in this case
 	@GetMapping("/students")
-	public ResponseEntity<List<Student>> getStudents(@RequestParam(value = "state", required = true) String state) {
-		if (state.equals(null)) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	public ResponseEntity<List<Student>> getStudents(@RequestParam(value = "state", required = false) String state) {
+		if (state != null) {
+			return new ResponseEntity<>((List<Student>) studentRepository.findByStateOfResidence(state), HttpStatus.OK);
 		}
-		return new ResponseEntity<>((List<Student>) studentRepository.findByStateOfResidence(state), HttpStatus.OK);
+		return new ResponseEntity<>((List<Student>) studentRepository.findAll(), HttpStatus.OK);
 	}
 
 	@GetMapping("/students/{id}")
@@ -75,6 +75,7 @@ public class StudentControllerV2 {
 		if (bindingResult.hasErrors()) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+		System.out.println(student);
 		studentRepository.save(new Student(student.getId(), student.getFirstName(), student.getLastName(),
 				student.getStateOfResidence(), student.getOccupation(), student.isLovesClass()));
 		return new ResponseEntity<>(HttpStatus.CREATED);
